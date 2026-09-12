@@ -12,7 +12,7 @@ WeatherPro 是一款为 [TrafficMonitor](https://github.com/zhongyang219/Traffic
   - 天气网 (weather.com.cn)
   - 和风天气 (qweather.com)
   - OpenWeather (openweathermap.org)
-- 支持在横置任务栏占用两行显示天气信息
+- 支持在任务栏以双行模式显示天气信息（含「任意位置强制双行」选项）
 - 支持设置数据常驻显示区
 - 支持在固定宽度的主窗口区滚动显示长文本
 - 支持丰富的天气信息自定义控制选项
@@ -24,6 +24,26 @@ WeatherPro 是一款为 [TrafficMonitor](https://github.com/zhongyang219/Traffic
 - [优化] 支持主动检查插件更新
 - [优化] 在检查插件更新、手动更新天气、检索位置时，显示非阻塞进度窗口
 - [修复] 缺失天气网部分天气现象编码
+
+## 本次功能改进
+
+### 双行模式增强：任意位置强制双行
+
+- 新增设置项「主窗口任何情况下均开启双行模式」（`IDC_CHECK_DUAL_LINE_MODE_ALWAYS`）
+- 勾选后，主窗口在任务栏**任意位置**均占用双行显示，不再受「显示项目数为奇数且主项目位于最后」的限制
+- 原有「主窗口单独位于右端时启用双行模式」保持不变，仍按旧机制生效（奇数项落单时才分配双行高度）
+
+实现要点：
+
+- 插件接口升级至 API v8：`PluginInterface.h` 新增 `IPluginItem::IsDoubleLineExclusive()`（默认返回 0）
+- `MainItem::IsDoubleLineExclusive()` 根据配置 `enable_dual_line_mode_always` 返回 `1` / `0`，告知宿主「独占双行」
+- 双行绘制以宿主实际分配的高度为准：`dual_line = (启用双行开关) && h >= 32px` 时才按双行布局，避免旧宿主不给双行矩形时内容被挤压
+- 新增配置项 `enable_dual_line_mode_always`（`DataManager` 读写 + `MainSettingsDlg` 复选框 DDX 绑定 + `WeatherPro.rc` 中英文控件）
+
+注意事项：
+
+- `IsDoubleLineExclusive` 仅在任务栏「非水平排列」时生效
+- 需要 TrafficMonitor 宿主版本 ≥ 2026-07-16（官方 commit `32fc37a`，该提交才引入此接口），旧宿主不识别该接口时仅原「右端双行」功能生效
 
 ## 程序界面介绍
 
@@ -106,3 +126,41 @@ WeatherPro 是一款为 [TrafficMonitor](https://github.com/zhongyang219/Traffic
   - [修复] 没有使用新版插件接口设置语言
   - [修复] 和风天气API数据时间戳类型不一致
   - [修复] 解析json字符串可能导致崩溃
+
+## 编译环境
+
+### 工具链要求
+
+- Visual Studio 2022（`v143` 工具集，MSVC 14.44 及以上）
+- 需安装「使用 C++ 的桌面开发」工作负载，并勾选 **MFC** 组件
+- Windows 10 / 11 SDK
+- 语言标准：C++20（`/std:c++20`）
+- 字符集：Unicode；MFC 使用动态链接（`UseOfMfc: Dynamic`）
+
+### 第三方依赖（已内嵌）
+
+项目已内嵌以下第三方静态库，位于 `third_party/` 目录，x64 配置无需额外安装：
+
+| 依赖 | 头文件 | 库文件 |
+| --- | --- | --- |
+| OpenSSL 3.0.22 | `third_party/openssl/include/openssl/` | `third_party/openssl/lib/libcrypto_static.lib`、`libssl_static.lib` |
+| zlib | `third_party/zlib/include/` | `third_party/zlib/lib/zlib.lib`（Release）、`zlibd.lib`（Debug） |
+
+### 编译步骤
+
+1. 打开 `TMP-WeatherPro.sln`
+2. 先编译 `WPCore`（静态库，会将 zlib / OpenSSL 合并归档进 `WPCore.lib`）
+3. 再编译 `WeatherPro`（MFC 动态库）
+4. 产物：`x64\Release\WeatherPro.dll`、`x64\Debug\WeatherPro.dll`
+
+### 命令行脚本（脱离 IDE 编译）
+
+项目内提供了两个脚本，直接用 MSVC 命令行工具链编译：
+
+- `build_wpcore.py`：编译 WPCore 源文件并用 `lib.exe` 归档，同时合并 zlib / OpenSSL 静态库，产出 `lib\x64\{Release,Debug}\WPCore.lib`
+- `build_weatherpro.py`：编译 WeatherPro MFC DLL（`pch.cpp` 用 `/Ycpch.h` 生成预编译头 → 编译各 `.cpp` → `rc.exe` 编译资源 → `link.exe` 链接 `mfc140u.lib` + gdiplus + WPCore 等）
+
+### 说明
+
+- **x64 配置**的第三方依赖已内嵌（`WPCore.vcxproj` 通过相对路径 `$(ProjectDir)..\third_party\...` 引用），无需配置任何环境变量
+- **Win32 配置**仍引用 `$(VCPKG_HOME)`、`$(OPENSSL_30)` 等环境变量（依赖 vcpkg），如无 32 位需求可只编译 x64
