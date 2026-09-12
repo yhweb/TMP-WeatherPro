@@ -128,7 +128,7 @@
       <PreprocessorDefinitions>_DEBUG;_LIB;WIN32_LEAN_AND_MEAN;NOMINMAX;CPPHTTPLIB_OPENSSL_SUPPORT;CPPHTTPLIB_ZLIB_SUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\dependencies\yyjson\src\;$(ProjectDir)..\dependencies\jwt\include\;$(ProjectDir)..\dependencies\httplib\;$(VCPKG_HOME)\installed\x64-windows-static\include\;$(OPENSSL_30)\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\dependencies\yyjson\src\;$(ProjectDir)..\dependencies\jwt\include\;$(ProjectDir)..\dependencies\httplib\;$(ProjectDir)..\third_party\zlib\include\;$(ProjectDir)..\third_party\openssl\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -140,7 +140,7 @@
       <AdditionalDependencies>zlibd.lib;libssl_static.lib;libcrypto_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <Lib>
-      <AdditionalLibraryDirectories>$(VCPKG_HOME)\installed\x64-windows-static\debug\lib\;$(OPENSSL_30)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\third_party\zlib\lib\;$(ProjectDir)..\third_party\openssl\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -152,7 +152,7 @@
       <PreprocessorDefinitions>NDEBUG;_LIB;WIN32_LEAN_AND_MEAN;NOMINMAX;CPPHTTPLIB_OPENSSL_SUPPORT;CPPHTTPLIB_ZLIB_SUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\dependencies\yyjson\src\;$(ProjectDir)..\dependencies\jwt\include\;$(ProjectDir)..\dependencies\httplib\;$(VCPKG_HOME)\installed\x64-windows-static\include\;$(OPENSSL_30)\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\dependencies\yyjson\src\;$(ProjectDir)..\dependencies\jwt\include\;$(ProjectDir)..\dependencies\httplib\;$(ProjectDir)..\third_party\zlib\include\;$(ProjectDir)..\third_party\openssl\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -164,7 +164,7 @@
       <AdditionalDependencies>zlib.lib;libssl_static.lib;libcrypto_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <Lib>
-      <AdditionalLibraryDirectories>$(VCPKG_HOME)\installed\x64-windows-static\lib\;$(OPENSSL_30)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\third_party\zlib\lib\;$(ProjectDir)..\third_party\openssl\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
