@@ -95,6 +95,7 @@ public:
         bool main_item_scroll_text{ true };
         bool format_geo_coords_in_summary{ true };
         bool enable_dual_line_mode{ true };
+        bool enable_dual_line_mode_always{ false };
 
         std::unordered_set<WeatherDataKey, WeatherDataKeyHash> pinned_item_data_keys;
     };
